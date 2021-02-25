@@ -10,6 +10,7 @@ interface ImgI {
 const canvas: HTMLCollectionOf<HTMLCanvasElement> = document.getElementsByTagName(
   "canvas"
 );
+const btn = document.getElementById("filter");
 
 const item = canvas.item(0);
 
@@ -21,6 +22,8 @@ if (item) {
     let { x, y, width, height } = imgData;
     let lineWidth = 3;
     let isFocussed = false;
+    let isMouseDown = false;
+    let heldPosition = { xh: 0, yh: 0 };
 
     img.addEventListener(
       "load",
@@ -52,6 +55,14 @@ if (item) {
         );
         ctx.drawImage(img, x, y, width, height);
       }
+
+      if (isFocussed && isMouseDown) {
+        ctx.clearRect(x, y, width, height);
+        x = e.clientX - heldPosition.xh;
+        y = e.clientY - heldPosition.yh;
+        ctx.drawImage(img, x, y, width, height);
+      }
+      console.log({ isFocussed, heldPosition, isMouseDown });
     });
 
     item.addEventListener("click", (e: MouseEvent) => {
@@ -88,6 +99,40 @@ if (item) {
         );
         ctx.drawImage(img, x, y, width, height);
       }
+    });
+
+    item.addEventListener("mousedown", (e: MouseEvent) => {
+      if (
+        isFocussed &&
+        e.clientX <= width + x &&
+        e.clientX >= x &&
+        e.clientY <= height + y &&
+        e.clientY >= y
+      ) {
+        isMouseDown = true;
+        ctx.clearRect(
+          x - lineWidth,
+          y - lineWidth,
+          width + lineWidth * 2,
+          height + lineWidth * 2
+        );
+        ctx.drawImage(img, x, y, width, height);
+        heldPosition.xh = e.clientX - x;
+        heldPosition.yh = e.clientY - y;
+      }
+    });
+
+    item.addEventListener("mouseup", (e: MouseEvent) => {
+      isMouseDown = false;
+      if (isFocussed) {
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = lineWidth;
+        ctx.strokeRect(x, y, width, height);
+      }
+    });
+
+    btn?.addEventListener("click", () => {
+      console.log({ isFocussed, heldPosition });
     });
   }
 }
