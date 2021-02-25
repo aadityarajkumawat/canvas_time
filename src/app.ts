@@ -20,7 +20,7 @@ if (item) {
     const imgData: ImgI = { x: 50, y: 50, width: 300, height: 300 };
     let { x, y, width, height } = imgData;
     let lineWidth = 3;
-    // let isFocussed = false;
+    let isFocussed = false;
 
     img.addEventListener(
       "load",
@@ -37,15 +37,25 @@ if (item) {
         e.clientX <= width + x &&
         e.clientX >= x &&
         e.clientY <= height + y &&
-        e.clientY >= y
+        e.clientY >= y &&
+        !isFocussed
       ) {
         ctx.strokeStyle = "orange";
         ctx.lineWidth = lineWidth;
         ctx.strokeRect(x, y, width, height);
-      } else {
+      } else if (!isFocussed) {
         ctx.clearRect(x - 3, y - 3, width + 6, height + 6);
         ctx.drawImage(img, x, y, width, height);
       }
+    });
+
+    item.addEventListener("click", () => {
+      isFocussed = true;
+      ctx.clearRect(x - 3, y - 3, width + 6, height + 6);
+      ctx.drawImage(img, x, y, width, height);
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = lineWidth;
+      ctx.strokeRect(x, y, width, height);
     });
   }
 }
