@@ -24,17 +24,31 @@ if (item) {
                 ctx.strokeRect(x, y, width, height);
             }
             else if (!isFocussed) {
-                ctx.clearRect(x - 3, y - 3, width + 6, height + 6);
+                ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
                 ctx.drawImage(img, x, y, width, height);
             }
         });
-        item.addEventListener("click", () => {
-            isFocussed = true;
-            ctx.clearRect(x - 3, y - 3, width + 6, height + 6);
-            ctx.drawImage(img, x, y, width, height);
-            ctx.strokeStyle = "red";
-            ctx.lineWidth = lineWidth;
-            ctx.strokeRect(x, y, width, height);
+        item.addEventListener("click", (e) => {
+            if (!isFocussed &&
+                e.clientX <= width + x &&
+                e.clientX >= x &&
+                e.clientY <= height + y &&
+                e.clientY >= y) {
+                isFocussed = true;
+                ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
+                ctx.drawImage(img, x, y, width, height);
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = lineWidth;
+                ctx.strokeRect(x, y, width, height);
+            }
+            else if ((isFocussed && e.clientX >= width + x) ||
+                e.clientX <= x ||
+                e.clientY >= height + y ||
+                e.clientY <= y) {
+                isFocussed = false;
+                ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
+                ctx.drawImage(img, x, y, width, height);
+            }
         });
     }
 }
