@@ -20,10 +20,11 @@ if (item) {
     let img = new Image();
     const imgData: ImgI = { x: 50, y: 50, width: 300, height: 300 };
     let { x, y, width, height } = imgData;
-    let lineWidth = 3;
+    let lineWidth = 7;
     let isFocussed = false;
     let isMouseDown = false;
     let heldPosition = { xh: 0, yh: 0 };
+    let canResize = false;
 
     img.addEventListener(
       "load",
@@ -56,13 +57,36 @@ if (item) {
         ctx.drawImage(img, x, y, width, height);
       }
 
-      if (isFocussed && isMouseDown) {
+      if (isFocussed && isMouseDown && !canResize) {
         ctx.clearRect(x, y, width, height);
         x = e.clientX - heldPosition.xh;
         y = e.clientY - heldPosition.yh;
         ctx.drawImage(img, x, y, width, height);
       }
-      console.log({ isFocussed, heldPosition, isMouseDown });
+
+      if (
+        ((e.clientX <= x + lineWidth && e.clientX >= x) ||
+          (e.clientX <= x + width + lineWidth && e.clientX >= x + width) ||
+          (e.clientY >= y && e.clientY <= y + lineWidth) ||
+          (e.clientY >= y + height && e.clientY <= y + height + lineWidth)) &&
+        isFocussed
+      ) {
+        canResize = true;
+        document.body.style.cursor = "e-resize";
+        if (isMouseDown) {
+          ctx.clearRect(x, y, width, height);
+          width = e.clientX - x;
+          ctx.drawImage(img, x, y, width, height);
+        }
+      } else {
+        canResize = false;
+        document.body.style.cursor = "auto";
+      }
+      console.log({
+        isMouseDown,
+        canResize,
+        isFocussed,
+      });
     });
 
     item.addEventListener("click", (e: MouseEvent) => {
@@ -122,7 +146,7 @@ if (item) {
       }
     });
 
-    item.addEventListener("mouseup", (e: MouseEvent) => {
+    item.addEventListener("mouseup", () => {
       isMouseDown = false;
       if (isFocussed) {
         ctx.strokeStyle = "red";
