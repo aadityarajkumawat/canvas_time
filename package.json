@@ -1,0 +1,22 @@
+{
+  "name": "idk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "watch": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aadityarajkumawat/canvas_time.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aadityarajkumawat/canvas_time/issues"
+  },
+  "homepage": "https://github.com/aadityarajkumawat/canvas_time#readme",
+  "devDependencies": {
+    "typescript": "^4.2.2"
+  }
+}
