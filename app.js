@@ -10,6 +10,8 @@ let img = new Image();
 const imgPos = { x: 50, y: 0 };
 let { x, y } = imgPos;
 let imageStyles = {};
+let imageHeldPosition = { xh: 50, yh: 50 };
+let mii = { xPrev: 50, yPrev: 0 };
 
 img.addEventListener(
   "load",
@@ -33,14 +35,20 @@ document.getElementById("can").addEventListener("mousemove", (e) => {
   if (isMouseDown && isFocused) {
     console.log("ok cool");
     ctx.clearRect(
-      x - 1 - 50,
-      y - 1 - 50,
+      x - 1 - imageHeldPosition.xh,
+      y - 1 - imageHeldPosition.yh,
       img.naturalWidth + 2,
       img.naturalHeight + 2
     );
     x = e.clientX;
     y = e.clientY;
-    ctx.drawImage(img, x - 50, y - 50, 300, 300);
+    ctx.drawImage(
+      img,
+      x - imageHeldPosition.xh,
+      y - imageHeldPosition.yh,
+      300,
+      300
+    );
   }
 });
 
@@ -55,16 +63,23 @@ document.getElementById("can").addEventListener("click", (e) => {
     if (!isFocused) {
       isFocused = true;
       ctx.strokeStyle = "green";
-      ctx.strokeRect(x, y, 300, 300);
+      ctx.strokeRect(mii.xPrev, mii.yPrev, 300, 300);;
     }
   } else {
     document.body.style.cursor = "crosshair";
 
-    if (isFocused) {
-      isFocused = false;
-      ctx.clearRect(x - 1, y - 1, img.naturalWidth + 2, img.naturalHeight + 2);
-      ctx.drawImage(img, x - 50, y - 50, 300, 300);
-    }
+    // if (isFocused) {
+    //   isFocused = false;
+    //   ctx.clearRect(x - 1, y - 1, img.naturalWidth + 2, img.naturalHeight + 2);
+    //   let x
+    //   ctx.drawImage(
+    //     img,
+    //     x - imageHeldPosition.xh,
+    //     y - imageHeldPosition.yh,
+    //     300,
+    //     300
+    //   );
+    // }
   }
 });
 
@@ -76,6 +91,9 @@ document.getElementById("can").addEventListener("mousedown", (e) => {
     e.clientY <= img.naturalHeight + y
   ) {
     isMouseDown = true;
+    imageHeldPosition.xh = e.clientX - x;
+    imageHeldPosition.yh = e.clientY - y;
+    console.log(imageHeldPosition);
   }
 });
 
