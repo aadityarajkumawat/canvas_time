@@ -6,13 +6,14 @@ if (item) {
     const ctx = item.getContext("2d");
     if (ctx) {
         let img = new Image();
-        const imgData = { x: 50, y: 50, width: 300, height: 300 };
+        const imgData = { x: 250, y: 150, width: 300, height: 300 };
         let { x, y, width, height } = imgData;
         let lineWidth = 7;
         let isFocussed = false;
         let isMouseDown = false;
         let heldPosition = { xh: 0, yh: 0 };
         let canResize = false;
+        let edgeResizedBy = "RIGHT";
         img.addEventListener("load", () => {
             ctx.drawImage(img, x, y, width, height);
         }, false);
@@ -56,17 +57,27 @@ if (item) {
                 isFocussed) {
                 canResize = true;
                 document.body.style.cursor = "e-resize";
+                edgeResizedBy = "RIGHT";
+            }
+            if (e.clientX > x - lineWidth && e.clientX < x && isFocussed) {
+                canResize = true;
+                document.body.style.cursor = "e-resize";
+                edgeResizedBy = "LEFT";
             }
             if (canResize && isMouseDown) {
-                ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
-                width = e.clientX - x;
-                ctx.drawImage(img, x, y, width, height);
+                if (edgeResizedBy === "RIGHT") {
+                    ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
+                    width = e.clientX - x;
+                    ctx.drawImage(img, x, y, width, height);
+                }
+                else if (edgeResizedBy === "LEFT") {
+                    console.log("u r cool");
+                    ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
+                    width = x - e.clientX + width;
+                    x = e.clientX;
+                    ctx.drawImage(img, x, y, width, height);
+                }
             }
-            console.log({
-                isMouseDown,
-                canResize,
-                isFocussed,
-            });
         });
         item.addEventListener("click", (e) => {
             if (!isFocussed &&
@@ -85,7 +96,6 @@ if (item) {
                 e.clientX <= x ||
                 e.clientY >= height + y ||
                 e.clientY <= y) {
-                isFocussed = false;
                 ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
                 ctx.drawImage(img, x, y, width, height);
             }
@@ -108,10 +118,14 @@ if (item) {
                 isFocussed) {
                 isMouseDown = true;
             }
+            if (e.clientX > x - lineWidth && e.clientX < x && isFocussed) {
+                isMouseDown = true;
+            }
         });
         item.addEventListener("mouseup", () => {
             isMouseDown = false;
             if (canResize) {
+                isFocussed = true;
                 canResize = false;
             }
             if (isFocussed) {
