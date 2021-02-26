@@ -40,11 +40,17 @@ if (item) {
                 document.body.style.cursor = "move";
                 console.log("Redrawing");
             }
-            console.log({
-                isMouseDown,
-                canResize,
-                isFocussed,
-            });
+            if (e.clientX > x + width &&
+                e.clientX < x + lineWidth + width &&
+                isFocussed) {
+                canResize = true;
+                console.log("Im in between");
+            }
+            if (canResize && isMouseDown) {
+                ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
+                width = e.clientX - x;
+                ctx.drawImage(img, x, y, width, height);
+            }
         });
         item.addEventListener("click", (e) => {
             if (!isFocussed &&
@@ -80,6 +86,11 @@ if (item) {
                 ctx.drawImage(img, x, y, width, height);
                 heldPosition.xh = e.clientX - x;
                 heldPosition.yh = e.clientY - y;
+            }
+            if (e.clientX > x + width &&
+                e.clientX < x + lineWidth + width &&
+                isFocussed) {
+                isMouseDown = true;
             }
         });
         item.addEventListener("mouseup", () => {
