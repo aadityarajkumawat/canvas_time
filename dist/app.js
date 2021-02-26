@@ -17,6 +17,7 @@ if (item) {
             ctx.drawImage(img, x, y, width, height);
         }, false);
         img.src = src;
+        document.body.style.cursor = "crosshair";
         item.addEventListener("mousemove", (e) => {
             if (e.clientX <= width + x &&
                 e.clientX >= x &&
@@ -25,7 +26,7 @@ if (item) {
                 !isFocussed) {
                 ctx.strokeStyle = "orange";
                 ctx.lineWidth = lineWidth;
-                ctx.strokeRect(x, y, width, height);
+                ctx.strokeRect(x - lineWidth / 2, y - lineWidth / 2, width + lineWidth, height + lineWidth);
             }
             else if (!isFocussed) {
                 ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
@@ -36,23 +37,8 @@ if (item) {
                 x = e.clientX - heldPosition.xh;
                 y = e.clientY - heldPosition.yh;
                 ctx.drawImage(img, x, y, width, height);
-            }
-            if (((e.clientX <= x + lineWidth && e.clientX >= x) ||
-                (e.clientX <= x + width + lineWidth && e.clientX >= x + width) ||
-                (e.clientY >= y && e.clientY <= y + lineWidth) ||
-                (e.clientY >= y + height && e.clientY <= y + height + lineWidth)) &&
-                isFocussed) {
-                canResize = true;
-                document.body.style.cursor = "e-resize";
-                if (isMouseDown) {
-                    ctx.clearRect(x, y, width, height);
-                    width = e.clientX - x;
-                    ctx.drawImage(img, x, y, width, height);
-                }
-            }
-            else {
-                canResize = false;
-                document.body.style.cursor = "auto";
+                document.body.style.cursor = "move";
+                console.log("Redrawing");
             }
             console.log({
                 isMouseDown,
@@ -71,7 +57,7 @@ if (item) {
                 ctx.drawImage(img, x, y, width, height);
                 ctx.strokeStyle = "red";
                 ctx.lineWidth = lineWidth;
-                ctx.strokeRect(x, y, width, height);
+                ctx.strokeRect(x - lineWidth / 2, y - lineWidth / 2, width + lineWidth, height + lineWidth);
             }
             else if ((isFocussed && e.clientX >= width + x) ||
                 e.clientX <= x ||
@@ -89,6 +75,7 @@ if (item) {
                 e.clientY <= height + y &&
                 e.clientY >= y) {
                 isMouseDown = true;
+                document.body.style.cursor = "move";
                 ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
                 ctx.drawImage(img, x, y, width, height);
                 heldPosition.xh = e.clientX - x;
@@ -97,10 +84,14 @@ if (item) {
         });
         item.addEventListener("mouseup", () => {
             isMouseDown = false;
+            if (canResize) {
+                canResize = false;
+            }
             if (isFocussed) {
                 ctx.strokeStyle = "red";
                 ctx.lineWidth = lineWidth;
                 ctx.strokeRect(x, y, width, height);
+                document.body.style.cursor = "crosshair";
             }
         });
         btn === null || btn === void 0 ? void 0 : btn.addEventListener("click", () => {
