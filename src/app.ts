@@ -70,7 +70,21 @@ if (item) {
         y = e.clientY - heldPosition.yh;
         ctx.drawImage(img, x, y, width, height);
         document.body.style.cursor = "move";
-        console.log("Redrawing");
+      }
+
+      if (
+        (e.clientX > x &&
+          e.clientX < x + width &&
+          e.clientY > y &&
+          e.clientY < y + height &&
+          !isMouseDown) ||
+        (e.clientX < x - lineWidth && !isMouseDown) ||
+        (e.clientX > x + width + lineWidth && !isMouseDown) ||
+        (e.clientY < y - lineWidth && !isMouseDown) ||
+        (e.clientY > y + height + lineWidth && !isMouseDown)
+      ) {
+        canResize = false;
+        document.body.style.cursor = "crosshair";
       }
 
       if (
@@ -79,8 +93,13 @@ if (item) {
         isFocussed
       ) {
         canResize = true;
-        console.log("Im in between");
+        document.body.style.cursor = "e-resize";
       }
+
+      // if (e.clientX > x - lineWidth && e.clientX < width && isFocussed) {
+      //   document.body.style.cursor = "n-resize";
+      //   canResize = true;
+      // }
 
       if (canResize && isMouseDown) {
         ctx.clearRect(
@@ -94,11 +113,11 @@ if (item) {
         ctx.drawImage(img, x, y, width, height);
       }
 
-      // console.log({
-      //   isMouseDown,
-      //   canResize,
-      //   isFocussed,
-      // });
+      console.log({
+        isMouseDown,
+        canResize,
+        isFocussed,
+      });
     });
 
     item.addEventListener("click", (e: MouseEvent) => {
@@ -179,7 +198,12 @@ if (item) {
       if (isFocussed) {
         ctx.strokeStyle = "red";
         ctx.lineWidth = lineWidth;
-        ctx.strokeRect(x, y, width, height);
+        ctx.strokeRect(
+          x - lineWidth / 2,
+          y - lineWidth / 2,
+          width + lineWidth,
+          height + lineWidth
+        );
         document.body.style.cursor = "crosshair";
       }
     });

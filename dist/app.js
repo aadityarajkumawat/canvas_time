@@ -38,19 +38,35 @@ if (item) {
                 y = e.clientY - heldPosition.yh;
                 ctx.drawImage(img, x, y, width, height);
                 document.body.style.cursor = "move";
-                console.log("Redrawing");
+            }
+            if ((e.clientX > x &&
+                e.clientX < x + width &&
+                e.clientY > y &&
+                e.clientY < y + height &&
+                !isMouseDown) ||
+                (e.clientX < x - lineWidth && !isMouseDown) ||
+                (e.clientX > x + width + lineWidth && !isMouseDown) ||
+                (e.clientY < y - lineWidth && !isMouseDown) ||
+                (e.clientY > y + height + lineWidth && !isMouseDown)) {
+                canResize = false;
+                document.body.style.cursor = "crosshair";
             }
             if (e.clientX > x + width &&
                 e.clientX < x + lineWidth + width &&
                 isFocussed) {
                 canResize = true;
-                console.log("Im in between");
+                document.body.style.cursor = "e-resize";
             }
             if (canResize && isMouseDown) {
                 ctx.clearRect(x - lineWidth, y - lineWidth, width + lineWidth * 2, height + lineWidth * 2);
                 width = e.clientX - x;
                 ctx.drawImage(img, x, y, width, height);
             }
+            console.log({
+                isMouseDown,
+                canResize,
+                isFocussed,
+            });
         });
         item.addEventListener("click", (e) => {
             if (!isFocussed &&
@@ -101,7 +117,7 @@ if (item) {
             if (isFocussed) {
                 ctx.strokeStyle = "red";
                 ctx.lineWidth = lineWidth;
-                ctx.strokeRect(x, y, width, height);
+                ctx.strokeRect(x - lineWidth / 2, y - lineWidth / 2, width + lineWidth, height + lineWidth);
                 document.body.style.cursor = "crosshair";
             }
         });
